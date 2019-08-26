@@ -8,7 +8,13 @@
 
 import UIKit
 
+protocol HomeControllerDelegate: class {
+	func onRefreshTap()
+}
+
 class BottomStackViewBar: UIStackView {
+	
+	public weak var delegate: HomeControllerDelegate?
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -20,18 +26,24 @@ class BottomStackViewBar: UIStackView {
 	}
 	
 	private func setup() {
-		let subviews = [#imageLiteral(resourceName: "icon_refresh"), #imageLiteral(resourceName: "icon_dismiss"), #imageLiteral(resourceName: "icon_star"), #imageLiteral(resourceName: "icon_heart"), #imageLiteral(resourceName: "icon_flash")].map {
+		let refreshBttn = UIButton(type: .system)
+		refreshBttn.addTarget(self, action: #selector(onRefreshTap), for: .touchUpInside)
+		refreshBttn.setImage(#imageLiteral(resourceName: "icon_refresh").withRenderingMode(.alwaysOriginal), for: .normal)
+		addArrangedSubview(refreshBttn)
+		
+		_ = [#imageLiteral(resourceName: "icon_dismiss"), #imageLiteral(resourceName: "icon_star"), #imageLiteral(resourceName: "icon_heart"), #imageLiteral(resourceName: "icon_flash")].map {
 			(img) -> UIButton in
 			let bttn = UIButton(type: .system)
 			bttn.setImage(img.withRenderingMode(.alwaysOriginal), for: .normal)
+			addArrangedSubview(bttn)
 			return bttn
-		}
-		subviews.forEach {
-			(v) in
-			addArrangedSubview(v)
 		}
 		distribution = .fillEqually
 		heightAnchor.constraint(equalToConstant: 80).isActive = true
+	}
+	
+	@objc private func onRefreshTap() {
+		delegate?.onRefreshTap()
 	}
 	
 	

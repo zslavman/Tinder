@@ -11,14 +11,22 @@ import UIKit
 
 class CardView: UIView {
 	
-	private let imageView: UIImageView = {
+	public let imageView: UIImageView = {
 		let img = UIImageView(image: #imageLiteral(resourceName: "sampel"))
-		//img.contentMode = .scaleAspectFill
+		img.contentMode = .scaleAspectFill
 		img.layer.cornerRadius = 10
 		img.clipsToBounds = true
 		return img
 	}()
+	public let nameLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textColor = .white
+		label.numberOfLines = 0 // allow multiline
+		return label
+	}()
 	private let threshold: CGFloat = 90 // points for card will fly-away
+	
 	
 	
 	override init(frame: CGRect) {
@@ -31,13 +39,21 @@ class CardView: UIView {
 	
 	private func setup() {
 		addSubview(imageView)
+		addSubview(nameLabel)
 		imageView.fillSuperView()
+		NSLayoutConstraint.activate([
+			nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+			nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+			nameLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+		])
 		let panGesture = UIPanGestureRecognizer(target: self, action: #selector(onPan(gesture:)))
+		//panGesture.isEnabled = false
 		addGestureRecognizer(panGesture)
 	}
 	
 	@objc private func onPan(gesture: UIPanGestureRecognizer) {
 		switch gesture.state {
+		case .began		: layer.removeAllAnimations()
 		case .changed	: onPanChanged(gesture)
 		case .ended		: onPanEnded(gesture)
 		default			: ()
@@ -59,6 +75,7 @@ class CardView: UIView {
 					   options: [.curveEaseOut, .allowUserInteraction], animations: {
 			if shouldDismissCard {
 				// dont use translation, because it have buggie jumping
+				self.isUserInteractionEnabled = false
 				self.frame = CGRect(x: directionalTranslation * 800, y: 0, width: self.superview!.frame.width,
 									height: self.superview!.self.frame.height)
 			}
@@ -68,6 +85,9 @@ class CardView: UIView {
 		}) {
 			(_) in
 			self.transform = .identity
+			if shouldDismissCard {
+				self.removeFromSuperview()
+			}
 			//self.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
 		}
 	}

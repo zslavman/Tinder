@@ -13,7 +13,22 @@ class HomeController: UIViewController {
 	private let topStack = TopStackViewBar()
 	private let cardsDeckView = UIView()
 	private let bottomStack = BottomStackViewBar()
+	private let cardViewModels = [
+		UserModel(name: "Anything", age: 32, profession: "Cooper", imageName: "sample_00001").toCardViewModel(),
+		UserModel(name: "Voilya", age: 25, profession: "Steeler", imageName: "sample_00002").toCardViewModel(),
+		UserModel(name: "Ilionora", age: 27, profession: "Morder", imageName: "sample_00003").toCardViewModel(),
+		UserModel(name: "Silvara", age: 23, profession: "Holder", imageName: "sample_00004").toCardViewModel(),
+		UserModel(name: "Straden", age: 22, profession: "Border", imageName: "sample_00005").toCardViewModel(),
+		UserModel(name: "Base", age: 21, profession: "Garder", imageName: "sample_00006").toCardViewModel(),
+		UserModel(name: "Polizer", age: 22, profession: "Smiler", imageName: "sample_00007").toCardViewModel(),
+		UserModel(name: "Romei", age: 18, profession: "Filler", imageName: "sample_00008").toCardViewModel(),
+		UserModel(name: "Chank", age: 24, profession: "Enginer", imageName: "sample_00009").toCardViewModel(),
+		UserModel(name: "Glory", age: 33, profession: "Proger", imageName: "sample_00010").toCardViewModel(),
+		UserModel(name: "Steny", age: 30, profession: "Bugger", imageName: "sample_00011").toCardViewModel(),
+		UserModel(name: "Bloody", age: 20, profession: "Caller", imageName: "sample_00012").toCardViewModel(),
+	]
 
+	
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -25,6 +40,7 @@ class HomeController: UIViewController {
 	private func createBars() {
 		let overAllStack = UIStackView(arrangedSubviews: [topStack, cardsDeckView, bottomStack])
 		overAllStack.axis = .vertical
+		bottomStack.delegate = self
 		
 		view.addSubview(overAllStack)
 		overAllStack.translatesAutoresizingMaskIntoConstraints = false
@@ -40,9 +56,33 @@ class HomeController: UIViewController {
 	}
 	
 	private func setupCards() {
-		let cardView = CardView(frame: .zero)
-		cardsDeckView.addSubview(cardView)
-		cardView.fillSuperView()
+		cardViewModels.forEach {
+			(cardVM) in
+			let cardView = CardView(frame: .zero)
+			cardView.imageView.image = UIImage(named: cardVM.imageName)
+			cardView.nameLabel.attributedText = cardVM.attributedString
+			cardView.nameLabel.textAlignment = cardVM.textAlignment
+			cardsDeckView.addSubview(cardView)
+			cardView.fillSuperView()
+		}
+		
+		
 	}
 
+}
+
+extension HomeController: HomeControllerDelegate {
+	
+	func onRefreshTap() {
+		var allow = true
+		cardsDeckView.subviews.forEach {
+			(subview) in
+			if subview is CardView {
+				allow = false
+			}
+		}
+		guard allow else { return }
+		setupCards()
+	}
+	
 }
