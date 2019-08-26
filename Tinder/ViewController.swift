@@ -11,7 +11,7 @@ import UIKit
 class ViewController: UIViewController {
 	
 	private let topStack = TopStackViewBar()
-	private let middleStack = UIView()
+	private let cardsDeckView = UIView()
 	private let bottomStack = BottomStackViewBar()
 
 	
@@ -19,12 +19,11 @@ class ViewController: UIViewController {
 		super.viewDidLoad()
 		view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
 		createBars()
+		setupCards()
 	}
 	
 	private func createBars() {
-		middleStack.backgroundColor = .blue
-
-		let overAllStack = UIStackView(arrangedSubviews: [topStack, middleStack, bottomStack])
+		let overAllStack = UIStackView(arrangedSubviews: [topStack, cardsDeckView, bottomStack])
 		overAllStack.axis = .vertical
 		
 		view.addSubview(overAllStack)
@@ -35,6 +34,15 @@ class ViewController: UIViewController {
 			overAllStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 			overAllStack.trailingAnchor.constraint(equalTo: view.trailingAnchor),
 		])
+		overAllStack.isLayoutMarginsRelativeArrangement = true
+		overAllStack.layoutMargins = .init(top: 0, left: 10, bottom: 0, right: 10)
+		overAllStack.bringSubviewToFront(cardsDeckView)
+	}
+	
+	private func setupCards() {
+		let cardView = CardView(frame: .zero)
+		cardsDeckView.addSubview(cardView)
+		cardView.fillSuperView()
 	}
 
 }
