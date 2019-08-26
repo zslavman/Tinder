@@ -40,6 +40,7 @@ class HomeController: UIViewController {
 	private func createBars() {
 		let overAllStack = UIStackView(arrangedSubviews: [topStack, cardsDeckView, bottomStack])
 		overAllStack.axis = .vertical
+		
 		bottomStack.delegate = self
 		
 		view.addSubview(overAllStack)
@@ -59,6 +60,7 @@ class HomeController: UIViewController {
 		cardViewModels.forEach {
 			(cardVM) in
 			let cardView = CardView(frame: .zero)
+			cardView.delegate = self
 			cardView.imageView.image = UIImage(named: cardVM.imageName)
 			cardView.nameLabel.attributedText = cardVM.attributedString
 			cardView.nameLabel.textAlignment = cardVM.textAlignment
@@ -71,7 +73,7 @@ class HomeController: UIViewController {
 
 }
 
-extension HomeController: HomeControllerDelegate {
+extension HomeController: BottomStackViewBarDelegate {
 	
 	func onRefreshTap() {
 		var allow = true
@@ -84,5 +86,21 @@ extension HomeController: HomeControllerDelegate {
 		guard allow else { return }
 		setupCards()
 	}
-	
 }
+
+extension HomeController: CardViewDelegate {
+	
+	func stopPreviousAnim() {
+		cardsDeckView.subviews.forEach {
+			(subview) in
+			if let entity = subview as? CardView {
+				guard entity.canBeDismissed else { return }
+				if let anims = entity.layer.animationKeys(), !anims.isEmpty {
+					entity.layer.removeAllAnimations()
+					entity.removeFromSuperview()
+				}
+			}
+		}
+	}
+}
+

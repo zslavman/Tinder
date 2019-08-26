@@ -8,13 +8,13 @@
 
 import UIKit
 
-protocol HomeControllerDelegate: class {
+protocol BottomStackViewBarDelegate: class {
 	func onRefreshTap()
 }
 
 class BottomStackViewBar: UIStackView {
 	
-	public weak var delegate: HomeControllerDelegate?
+	public weak var delegate: BottomStackViewBarDelegate?
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)

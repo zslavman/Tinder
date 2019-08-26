@@ -8,9 +8,13 @@
 
 import UIKit
 
+protocol CardViewDelegate: class {
+	func stopPreviousAnim()
+}
 
 class CardView: UIView {
 	
+	public weak var delegate: CardViewDelegate?
 	public let imageView: UIImageView = {
 		let img = UIImageView(image: #imageLiteral(resourceName: "sampel"))
 		img.contentMode = .scaleAspectFill
@@ -26,7 +30,7 @@ class CardView: UIView {
 		return label
 	}()
 	private let threshold: CGFloat = 90 // points for card will fly-away
-	
+	public var canBeDismissed = false
 	
 	
 	override init(frame: CGRect) {
@@ -47,13 +51,12 @@ class CardView: UIView {
 			nameLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
 		])
 		let panGesture = UIPanGestureRecognizer(target: self, action: #selector(onPan(gesture:)))
-		//panGesture.isEnabled = false
 		addGestureRecognizer(panGesture)
 	}
 	
 	@objc private func onPan(gesture: UIPanGestureRecognizer) {
 		switch gesture.state {
-		case .began		: layer.removeAllAnimations()
+		case .began		: delegate?.stopPreviousAnim()
 		case .changed	: onPanChanged(gesture)
 		case .ended		: onPanEnded(gesture)
 		default			: ()
@@ -70,12 +73,15 @@ class CardView: UIView {
 	
 	private func onPanEnded(_ gesture: UIPanGestureRecognizer) {
 		let directionalTranslation: CGFloat = gesture.translation(in: nil).x > 0 ? 1 : -1
-		let shouldDismissCard = abs(gesture.translation(in: nil).x) > threshold
+		var shouldDismissCard = false
+		if abs(gesture.translation(in: nil).x) > threshold || abs(gesture.translation(in: nil).y) > threshold {
+			shouldDismissCard = true
+			canBeDismissed = true
+		}
 		UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1,
 					   options: [.curveEaseOut, .allowUserInteraction], animations: {
 			if shouldDismissCard {
 				// dont use translation, because it have buggie jumping
-				self.isUserInteractionEnabled = false
 				self.frame = CGRect(x: directionalTranslation * 800, y: 0, width: self.superview!.frame.width,
 									height: self.superview!.self.frame.height)
 			}
@@ -84,11 +90,9 @@ class CardView: UIView {
 			}
 		}) {
 			(_) in
-			self.transform = .identity
 			if shouldDismissCard {
 				self.removeFromSuperview()
 			}
-			//self.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
 		}
 	}
 	
