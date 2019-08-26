@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class HomeController: UIViewController {
 	
 	private let topStack = TopStackViewBar()
 	private let cardsDeckView = UIView()
