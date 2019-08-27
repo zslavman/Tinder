@@ -100,9 +100,6 @@ class CardView: UIView {
 //									height: self.superview!.self.frame.height)
 				
 				self.transform = CGAffineTransform(translationX: directionalTranslation * 800, y: 200)
-//				UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.99, animations: {
-//					self.transform = .identity
-//				})
 			}
 			else {
 				self.transform = .identity
@@ -120,7 +117,7 @@ class CardView: UIView {
 		gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
 		gradientLayer.locations = [0.6, 1.1] //0.5 - .clear color start from 50% of screen
 		layer.addSublayer(gradientLayer)
-		//bringSubviewToFront(nameLabel)
+		bringSubviewToFront(nameLabel)
 		//gradientLayer.frame = self.frame // in here CardView frame wouldn't be ready
 	}
 	
