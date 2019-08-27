@@ -92,14 +92,18 @@ class CardView: UIView {
 			shouldDismissCard = true
 			canBeDismissed = true
 		}
-		UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.99, initialSpringVelocity: 0.1,
+//		UIView.animateKeyframes(withDuration: 0.6, delay: 0, options: [.calculationModeCubicPaced], animations: {
+//			if shouldDismissCard {
+//				UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.1, animations: {
+//					self.transform = CGAffineTransform(translationX: directionalTranslation * 800, y: 0)
+//				})
+//			}
+		UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1,
 					   options: [.curveEaseOut, .allowUserInteraction], animations: {
 			if shouldDismissCard {
 				// dont use translation, because it have buggie jumping
-//				self.frame = CGRect(x: directionalTranslation * 800, y: 0, width: self.superview!.frame.width,
-//									height: self.superview!.self.frame.height)
-				
-				self.transform = CGAffineTransform(translationX: directionalTranslation * 800, y: 200)
+				//self.transform = CGAffineTransform(translationX: directionalTranslation * 200, y: 0)
+				self.frame.origin.x = directionalTranslation * 800
 			}
 			else {
 				self.transform = .identity
