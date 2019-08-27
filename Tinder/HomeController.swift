@@ -13,29 +13,34 @@ class HomeController: UIViewController {
 	private let topStack = TopStackViewBar()
 	private let cardsDeckView = UIView()
 	private let bottomStack = BottomStackViewBar()
-	private let cardViewModels = [
-		UserModel(name: "Anything", age: 32, profession: "Cooper", imageName: "sample_00001").toCardViewModel(),
-		UserModel(name: "Voilya", age: 25, profession: "Steeler", imageName: "sample_00002").toCardViewModel(),
-		UserModel(name: "Ilionora", age: 27, profession: "Morder", imageName: "sample_00003").toCardViewModel(),
-		UserModel(name: "Silvara", age: 23, profession: "Holder", imageName: "sample_00004").toCardViewModel(),
-		UserModel(name: "Straden", age: 22, profession: "Border", imageName: "sample_00005").toCardViewModel(),
-		UserModel(name: "Base", age: 21, profession: "Garder", imageName: "sample_00006").toCardViewModel(),
-		UserModel(name: "Polizer", age: 22, profession: "Smiler", imageName: "sample_00007").toCardViewModel(),
-		UserModel(name: "Romei", age: 18, profession: "Filler", imageName: "sample_00008").toCardViewModel(),
-		UserModel(name: "Chank", age: 24, profession: "Enginer", imageName: "sample_00009").toCardViewModel(),
-		UserModel(name: "Glory", age: 33, profession: "Proger", imageName: "sample_00010").toCardViewModel(),
-		UserModel(name: "Steny", age: 30, profession: "Bugger", imageName: "sample_00011").toCardViewModel(),
-		UserModel(name: "Bloody", age: 20, profession: "Caller", imageName: "sample_00012").toCardViewModel(),
-	]
+	private var cardViewModels: [CardViewModel] = {
+		let arr = [
+			UserModel(name: "Anything", age: 32, profession: "Cooper", imageName: "sample_00001"),
+			UserModel(name: "Voilya", age: 25, profession: "Steeler", imageName: "sample_00002"),
+			UserModel(name: "Ilionora", age: 27, profession: "Morder", imageName: "sample_00003"),
+			UserModel(name: "Silvara", age: 23, profession: "Holder", imageName: "sample_00004"),
+			UserModel(name: "Straden", age: 22, profession: "Border", imageName: "sample_00005"),
+			UserModel(name: "Base", age: 21, profession: "Garder", imageName: "sample_00006"),
+			UserModel(name: "Polizer", age: 22, profession: "Smiler", imageName: "sample_00007"),
+			UserModel(name: "Romei", age: 18, profession: "Filler", imageName: "sample_00008"),
+			UserModel(name: "Chank", age: 24, profession: "Enginer", imageName: "sample_00009"),
+			UserModel(name: "Steny", age: 30, profession: "Bugger", imageName: "sample_00011"),
+			UserModel(name: "Bloody", age: 20, profession: "Caller", imageName: "sample_00012"),
+			AdvertiserSample(title: "AdvertiserSample", brandName: "Louis Vuitton", posterPhotoName: "sample_00010")
+			] as [ProduceCardViewModelProtocol]
+		let vievModels = arr.map{ $0.toCardViewModel()}
+		return vievModels
+	}()
+	
 
-	
-	
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
 		createBars()
 		setupCards()
 	}
+	
 	
 	private func createBars() {
 		let overAllStack = UIStackView(arrangedSubviews: [topStack, cardsDeckView, bottomStack])
@@ -56,19 +61,17 @@ class HomeController: UIViewController {
 		overAllStack.bringSubviewToFront(cardsDeckView)
 	}
 	
+	
 	private func setupCards() {
-		cardViewModels.forEach {
+		let reversed = cardViewModels.reversed()
+		reversed.forEach {
 			(cardVM) in
 			let cardView = CardView(frame: .zero)
+			cardView.configureWith(cardVM)
 			cardView.delegate = self
-			cardView.imageView.image = UIImage(named: cardVM.imageName)
-			cardView.nameLabel.attributedText = cardVM.attributedString
-			cardView.nameLabel.textAlignment = cardVM.textAlignment
 			cardsDeckView.addSubview(cardView)
 			cardView.fillSuperView()
 		}
-		
-		
 	}
 
 }

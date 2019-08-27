@@ -15,14 +15,14 @@ protocol CardViewDelegate: class {
 class CardView: UIView {
 	
 	public weak var delegate: CardViewDelegate?
-	public let imageView: UIImageView = {
+	private let imageView: UIImageView = {
 		let img = UIImageView(image: #imageLiteral(resourceName: "sampel"))
 		img.contentMode = .scaleAspectFill
 		img.layer.cornerRadius = 10
 		img.clipsToBounds = true
 		return img
 	}()
-	public let nameLabel: UILabel = {
+	private let nameLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
 		label.textColor = .white
@@ -30,16 +30,27 @@ class CardView: UIView {
 		return label
 	}()
 	private let threshold: CGFloat = 90 // points for card will fly-away
-	public var canBeDismissed = false
+	public var canBeDismissed = false // fix for dead animation come back
+	private let gradientLayer = CAGradientLayer()
+	
+	
+	
+	public func configureWith(_ cardVM: CardViewModel) {
+		imageView.image = UIImage(named: cardVM.imageName)
+		nameLabel.attributedText = cardVM.attributedString
+		nameLabel.textAlignment = cardVM.textAlignment
+	}
 	
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setup()
+		addGradientLayer()
 	}
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+	
 	
 	private func setup() {
 		addSubview(imageView)
@@ -54,6 +65,7 @@ class CardView: UIView {
 		addGestureRecognizer(panGesture)
 	}
 	
+	
 	@objc private func onPan(gesture: UIPanGestureRecognizer) {
 		switch gesture.state {
 		case .began		: delegate?.stopPreviousAnim()
@@ -63,6 +75,7 @@ class CardView: UIView {
 		}
 	}
 	
+	
 	private func onPanChanged(_ gesture: UIPanGestureRecognizer) {
 		let translation = gesture.translation(in: nil)
 		let degrees: CGFloat = translation.x / 20
@@ -71,6 +84,7 @@ class CardView: UIView {
 		transform = rotationalTransform.translatedBy(x: translation.x, y: translation.y)
 	}
 	
+	
 	private func onPanEnded(_ gesture: UIPanGestureRecognizer) {
 		let directionalTranslation: CGFloat = gesture.translation(in: nil).x > 0 ? 1 : -1
 		var shouldDismissCard = false
@@ -78,12 +92,17 @@ class CardView: UIView {
 			shouldDismissCard = true
 			canBeDismissed = true
 		}
-		UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1,
+		UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.99, initialSpringVelocity: 0.1,
 					   options: [.curveEaseOut, .allowUserInteraction], animations: {
 			if shouldDismissCard {
 				// dont use translation, because it have buggie jumping
-				self.frame = CGRect(x: directionalTranslation * 800, y: 0, width: self.superview!.frame.width,
-									height: self.superview!.self.frame.height)
+//				self.frame = CGRect(x: directionalTranslation * 800, y: 0, width: self.superview!.frame.width,
+//									height: self.superview!.self.frame.height)
+				
+				self.transform = CGAffineTransform(translationX: directionalTranslation * 800, y: 200)
+//				UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.99, animations: {
+//					self.transform = .identity
+//				})
 			}
 			else {
 				self.transform = .identity
@@ -97,7 +116,18 @@ class CardView: UIView {
 	}
 	
 	
+	private func addGradientLayer() {
+		gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+		gradientLayer.locations = [0.6, 1.1] //0.5 - .clear color start from 50% of screen
+		layer.addSublayer(gradientLayer)
+		//bringSubviewToFront(nameLabel)
+		//gradientLayer.frame = self.frame // in here CardView frame wouldn't be ready
+	}
 	
 	
+	override func layoutSubviews() {
+		super.layoutSubviews()
+		gradientLayer.frame = self.frame // in here you know what CardView frame will be
+	}
 
 }
