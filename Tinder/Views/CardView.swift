@@ -4,7 +4,7 @@
 //
 //  Created by Zinko Viacheslav on 26.08.2019.
 //  Copyright © 2019 Zinko Viacheslav. All rights reserved.
-//
+//  marcosantadev.com/calayer-auto-layout-swift/
 
 import UIKit
 
@@ -31,7 +31,12 @@ class CardView: UIView {
 	}()
 	private let threshold: CGFloat = 90 // points for card will fly-away
 	public var canBeDismissed = false // fix for dead animation come back
-	private let gradientLayer = CAGradientLayer()
+	private let gradientLayer: CAGradientLayer = {
+		let gragLayer = CAGradientLayer()
+		gragLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+		gragLayer.locations = [0.6, 1.1] //0.5 - .clear color start from 50% of screen
+		return gragLayer
+	}()
 	
 	
 	
@@ -45,7 +50,6 @@ class CardView: UIView {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setup()
-		addGradientLayer()
 	}
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -54,7 +58,9 @@ class CardView: UIView {
 	
 	private func setup() {
 		addSubview(imageView)
+		layer.addSublayer(gradientLayer)
 		addSubview(nameLabel)
+		//bringSubviewToFront(nameLabel)
 		imageView.fillSuperView()
 		NSLayoutConstraint.activate([
 			nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
@@ -98,11 +104,11 @@ class CardView: UIView {
 //					self.transform = CGAffineTransform(translationX: directionalTranslation * 800, y: 0)
 //				})
 //			}
-		UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1,
+		UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.4,
 					   options: [.curveEaseOut, .allowUserInteraction], animations: {
 			if shouldDismissCard {
 				// dont use translation, because it have buggie jumping
-				//self.transform = CGAffineTransform(translationX: directionalTranslation * 200, y: 0)
+				//self.transform = CGAffineTransform(translationX: directionalTranslation * 800, y: 0)
 				self.frame.origin.x = directionalTranslation * 800
 			}
 			else {
@@ -116,19 +122,14 @@ class CardView: UIView {
 		}
 	}
 	
-	
-	private func addGradientLayer() {
-		gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-		gradientLayer.locations = [0.6, 1.1] //0.5 - .clear color start from 50% of screen
-		layer.addSublayer(gradientLayer)
-		bringSubviewToFront(nameLabel)
-		//gradientLayer.frame = self.frame // in here CardView frame wouldn't be ready
-	}
-	
-	
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		gradientLayer.frame = self.frame // in here you know what CardView frame will be
+		// set frame for gradient layer, in here you know what CardView frame will be
+		// but, when animation is going on - gradient will hide immediately
+		//gradientLayer.frame = self.frame
+		
+		gradientLayer.frame = self.bounds // fix for gradient disappearance
+		layoutIfNeeded()
 	}
 
 }
