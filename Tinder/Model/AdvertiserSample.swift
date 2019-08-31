@@ -22,7 +22,7 @@ struct AdvertiserSample: ProduceCardViewModelProtocol {
 		atr.append(NSAttributedString(string: " \(brandName)", attributes: [
 			.font : UIFont.systemFont(ofSize: 20, weight: .semibold)
 			]))
-		return CardViewModel(imageName: posterPhotoName, attributedString: atr, textAlignment: .center)
+		return CardViewModel(imageNames: [posterPhotoName], attributedString: atr, textAlignment: .center)
 	}
 	
 }

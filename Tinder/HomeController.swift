@@ -63,7 +63,7 @@ class HomeController: UIViewController {
 	
 	
 	private func setupCards() {
-		let reversed = cardViewModels.reversed()
+		let reversed = cardViewModels.shuffled()
 		reversed.forEach {
 			(cardVM) in
 			let cardView = CardView(frame: .zero)

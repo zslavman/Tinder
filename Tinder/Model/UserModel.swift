@@ -20,7 +20,7 @@ struct UserModel: ProduceCardViewModelProtocol {
 	let imageName	: String
 	
 	public func toCardViewModel() -> CardViewModel {
-		return CardViewModel(imageName: imageName, attributedString: getAttributed, textAlignment: .left)
+		return CardViewModel(imageNames: [imageName], attributedString: getAttributed, textAlignment: .left)
 	}
 
 	private var getAttributed: NSAttributedString {
