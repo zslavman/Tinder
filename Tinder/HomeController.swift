@@ -15,18 +15,27 @@ class HomeController: UIViewController {
 	private let bottomStack = BottomStackViewBar()
 	private var cardViewModels: [CardViewModel] = {
 		let arr = [
-			UserModel(name: "Anything", age: 32, profession: "Cooper", imageName: "sample_00001"),
-			UserModel(name: "Voilya", age: 25, profession: "Steeler", imageName: "sample_00002"),
-			UserModel(name: "Ilionora", age: 27, profession: "Morder", imageName: "sample_00003"),
-			UserModel(name: "Silvara", age: 23, profession: "Holder", imageName: "sample_00004"),
-			UserModel(name: "Straden", age: 22, profession: "Border", imageName: "sample_00005"),
-			UserModel(name: "Base", age: 21, profession: "Garder", imageName: "sample_00006"),
-			UserModel(name: "Polizer", age: 22, profession: "Smiler", imageName: "sample_00007"),
-			UserModel(name: "Romei", age: 18, profession: "Filler", imageName: "sample_00008"),
-			UserModel(name: "Chank", age: 24, profession: "Enginer", imageName: "sample_00009"),
-			UserModel(name: "Steny", age: 30, profession: "Bugger", imageName: "sample_00011"),
-			UserModel(name: "Bloody", age: 20, profession: "Caller", imageName: "sample_00012"),
-			AdvertiserSample(title: "AdvertiserSample", brandName: "Louis Vuitton", posterPhotoName: "sample_00010")
+			UserModel(name: "Islands", age: 32, profession: "Arisona", imageNames: [
+				"island_0",	"island_1", "island_2", "island_3", "island_4", "island_5",
+				"island_6", "island_7", "island_8", "island_9", "island_10", "island_11",
+				"island_12", "island_13", "island_14", "island_15", "island_16",
+			]),
+			UserModel(name: "Forests", age: 25, profession: "NewJersey", imageNames: [
+				"forest_0",	"forest_1", "forest_2", "forest_3", "forest_4", "forest_5", "forest_6",
+			]),
+			UserModel(name: "Lakes", age: 27, profession: "Riverside", imageNames: [
+				"lake_0", "lake_1", "lake_2", "lake_3", "lake_4", "lake_5",
+			]),
+			UserModel(name: "Mountains", age: 23, profession: "Kanzas", imageNames: [
+				"mountain_0", "mountain_1", "mountain_2", "mountain_3", "mountain_4",
+			]),
+			UserModel(name: "Rivers", age: 22, profession: "Uta", imageNames: [
+				"river_0", "river_1", "river_2",
+			]),
+			UserModel(name: "Waterfalls", age: 21, profession: "Oklahoma", imageNames: [
+				"waterfall_0", "waterfall_1", "waterfall_2", "waterfall_3",
+			]),
+			AdvertiserSample(title: "AdvertiserSample", brandName: "Louis Vuitton", posterPhotoName: "advertiser_poster")
 			] as [ProduceCardViewModelProtocol]
 		let vievModels = arr.map{ $0.toCardViewModel()}
 		return vievModels

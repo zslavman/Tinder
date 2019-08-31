@@ -16,10 +16,8 @@ class CardView: UIView {
 	
 	public weak var delegate: CardViewDelegate?
 	private let imageView: UIImageView = {
-		let img = UIImageView(image: #imageLiteral(resourceName: "sampel"))
+		let img = UIImageView()
 		img.contentMode = .scaleAspectFill
-		img.layer.cornerRadius = 10
-		img.clipsToBounds = true
 		return img
 	}()
 	private let nameLabel: UILabel = {
@@ -40,17 +38,33 @@ class CardView: UIView {
 	private let barsStackView: UIStackView = {
 		let sv = UIStackView()
 		sv.translatesAutoresizingMaskIntoConstraints = false
-		sv.axis = .vertical
+		sv.axis = .horizontal
+		sv.distribution = .fillEqually
+		sv.spacing = 4
 		return sv
 	}()
 	
 	
 	
 	public func configureWith(_ cardVM: CardViewModel) {
-		let imageName = cardVM.imageNames.first ?? ""
+		let imageName = cardVM.imageNames.shuffled().first ?? ""
 		imageView.image = UIImage(named: imageName)
 		nameLabel.attributedText = cardVM.attributedString
 		nameLabel.textAlignment = cardVM.textAlignment
+		
+		(0..<cardVM.imageNames.count).forEach {
+			(_) in
+			let barView = UIView()
+			barView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+			barsStackView.addArrangedSubview(barView)
+		}
+		barsStackView.arrangedSubviews.first!.backgroundColor = .white
+		if barsStackView.arrangedSubviews.count < 2 {
+			barsStackView.arrangedSubviews.forEach {
+				(subview) in
+				subview.isHidden = true
+			}
+		}
 	}
 	
 	
@@ -65,6 +79,8 @@ class CardView: UIView {
 	
 	
 	private func setup() {
+		layer.cornerRadius = 10
+		clipsToBounds = true
 		addSubview(imageView)
 		layer.addSublayer(gradientLayer)
 		addSubview(nameLabel)
@@ -84,8 +100,8 @@ class CardView: UIView {
 		NSLayoutConstraint.activate([
 			barsStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
 			barsStackView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
-			barsStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 8),
-			barsStackView.heightAnchor.constraint(equalToConstant: 5),
+			barsStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+			barsStackView.heightAnchor.constraint(equalToConstant: 4),
 		])
 	}
 	

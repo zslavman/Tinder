@@ -17,10 +17,10 @@ struct UserModel: ProduceCardViewModelProtocol {
 	let name		: String
 	let age			: Int
 	let profession	: String
-	let imageName	: String
+	let imageNames	: [String]
 	
 	public func toCardViewModel() -> CardViewModel {
-		return CardViewModel(imageNames: [imageName], attributedString: getAttributed, textAlignment: .left)
+		return CardViewModel(imageNames: imageNames, attributedString: getAttributed, textAlignment: .left)
 	}
 
 	private var getAttributed: NSAttributedString {
