@@ -43,11 +43,16 @@ class CardView: UIView {
 		sv.spacing = 4
 		return sv
 	}()
-	
+	private var cardVM: CardViewModel!
+	private let topLineActiveColor = UIColor.white
+	private let topLineNonActiveColor = UIColor.black.withAlphaComponent(0.2)
+	private var currentImageIndex = 0
+	private var maxRotateAngle: CGFloat = 40
 	
 	
 	public func configureWith(_ cardVM: CardViewModel) {
-		let imageName = cardVM.imageNames.shuffled().first ?? ""
+		self.cardVM = cardVM
+		let imageName = cardVM.imageNames.first ?? ""
 		imageView.image = UIImage(named: imageName)
 		nameLabel.attributedText = cardVM.attributedString
 		nameLabel.textAlignment = cardVM.textAlignment
@@ -55,10 +60,10 @@ class CardView: UIView {
 		(0..<cardVM.imageNames.count).forEach {
 			(_) in
 			let barView = UIView()
-			barView.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+			barView.backgroundColor = topLineNonActiveColor
 			barsStackView.addArrangedSubview(barView)
 		}
-		barsStackView.arrangedSubviews.first!.backgroundColor = .white
+		barsStackView.arrangedSubviews.first!.backgroundColor = topLineActiveColor
 		if barsStackView.arrangedSubviews.count < 2 {
 			barsStackView.arrangedSubviews.forEach {
 				(subview) in
@@ -92,6 +97,8 @@ class CardView: UIView {
 		])
 		let panGesture = UIPanGestureRecognizer(target: self, action: #selector(onPan(gesture:)))
 		addGestureRecognizer(panGesture)
+		let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap(gesture:)))
+		addGestureRecognizer(tapGesture)
 	}
 	
 	
@@ -103,6 +110,29 @@ class CardView: UIView {
 			barsStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
 			barsStackView.heightAnchor.constraint(equalToConstant: 4),
 		])
+	}
+	
+
+	@objc private func onTap(gesture: UITapGestureRecognizer) {
+		let tapLocation = gesture.location(in: nil)
+		if tapLocation.x >= self.frame.width / 2 {
+			currentImageIndex = min(currentImageIndex + 1, cardVM.imageNames.count - 1)
+		}
+		else {
+			currentImageIndex = max(currentImageIndex - 1, 0)
+		}
+		let newImageName = cardVM.imageNames[currentImageIndex]
+		imageView.image =  UIImage(named: newImageName)
+		
+		// set upper pointer color
+		for (index, subview) in barsStackView.arrangedSubviews.enumerated() {
+			if index == currentImageIndex {
+				subview.backgroundColor = topLineActiveColor
+			}
+			else {
+				subview.backgroundColor = topLineNonActiveColor
+			}
+		}
 	}
 	
 	
@@ -118,7 +148,13 @@ class CardView: UIView {
 	
 	private func onPanChanged(_ gesture: UIPanGestureRecognizer) {
 		let translation = gesture.translation(in: nil)
-		let degrees: CGFloat = translation.x / 20
+		var degrees: CGFloat = translation.x / 20
+		if degrees < 0 {
+			degrees = max(degrees, -1 * (maxRotateAngle / 2))
+		}
+		else {
+			degrees = min(degrees, maxRotateAngle / 2)
+		}
 		let angle = degrees * .pi / 180
 		let rotationalTransform = CGAffineTransform(rotationAngle: angle)
 		transform = rotationalTransform.translatedBy(x: translation.x, y: translation.y)
@@ -133,15 +169,22 @@ class CardView: UIView {
 			canBeDismissed = true
 		}
 		let translation = gesture.translation(in: nil)
-		let degrees: CGFloat = translation.x / 8
+		var degrees: CGFloat = translation.x / 8
+		if degrees < 0 {
+			degrees = max(degrees, -1 * (maxRotateAngle))
+		}
+		else {
+			degrees = min(degrees, maxRotateAngle)
+		}
 		let angle = degrees * .pi / 180
+		let biggerScreenSide = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
 		
 		// dismiss animation
 		if shouldDismissCard {
 			// 1) fix buggie jumping on start animation (on case 2)
 			UIView.animateKeyframes(withDuration: 0.4, delay: 0, options: [.calculationModeCubicPaced], animations: {
 				UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.3, animations: {
-					self.transform = CGAffineTransform(rotationAngle: angle).translatedBy(x: directionalTranslation * 800, y: -300)
+					self.transform = CGAffineTransform(rotationAngle: angle).translatedBy(x: directionalTranslation * biggerScreenSide, y: -300)
 				})
 			}, completion: {
 				(_) in
@@ -151,8 +194,7 @@ class CardView: UIView {
 			//			UIView.animate(withDuration: 2.0, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5,
 			//						   options: [.curveEaseOut, .allowUserInteraction], animations: {
 			//							self.frame.origin.x = directionalTranslation * 800
-			//							// if use translation - it create buggie jumping on start animation
-			//							//self.transform = CGAffineTransform(translationX: directionalTranslation * 800, y: 0)
+			//						self.transform = CGAffineTransform(translationX: directionalTranslation * 800, y: 0)
 			//			}, completion: {
 			//				(_) in
 			//				self.removeFromSuperview()
