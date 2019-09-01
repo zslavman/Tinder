@@ -15,27 +15,27 @@ class HomeController: UIViewController {
 	private let bottomStack = BottomStackViewBar()
 	private var cardViewModels: [CardViewModel] = {
 		let arr = [
-			UserModel(name: "Islands", age: 32, profession: "Arisona", imageNames: [
+			UserModel(name: "Islands", age: 17, profession: "Arisona", imageNames: [
 				"island_0",	"island_1", "island_2", "island_3", "island_4", "island_5",
 				"island_6", "island_7", "island_8", "island_9", "island_10", "island_11",
 				"island_12", "island_13", "island_14", "island_15", "island_16",
 			]),
-			UserModel(name: "Forests", age: 25, profession: "NewJersey", imageNames: [
+			UserModel(name: "Forests", age: 7, profession: "NewJersey", imageNames: [
 				"forest_0",	"forest_1", "forest_2", "forest_3", "forest_4", "forest_5", "forest_6",
 			]),
-			UserModel(name: "Lakes", age: 27, profession: "Riverside", imageNames: [
+			UserModel(name: "Lakes", age: 6, profession: "Riverside", imageNames: [
 				"lake_0", "lake_1", "lake_2", "lake_3", "lake_4", "lake_5",
 			]),
-			UserModel(name: "Mountains", age: 23, profession: "Kanzas", imageNames: [
+			UserModel(name: "Mountains", age: 5, profession: "Kanzas", imageNames: [
 				"mountain_0", "mountain_1", "mountain_2", "mountain_3", "mountain_4",
 			]),
-			UserModel(name: "Rivers", age: 22, profession: "Uta", imageNames: [
+			UserModel(name: "Rivers", age: 3, profession: "Uta", imageNames: [
 				"river_0", "river_1", "river_2",
 			]),
-			UserModel(name: "Waterfalls", age: 21, profession: "Oklahoma", imageNames: [
+			UserModel(name: "Waterfalls", age: 4, profession: "Oklahoma", imageNames: [
 				"waterfall_0", "waterfall_1", "waterfall_2", "waterfall_3",
 			]),
-			AdvertiserSample(title: "AdvertiserSample", brandName: "Louis Vuitton", posterPhotoName: "advertiser_poster")
+			//AdvertiserSample(title: "AdvertiserSample", brandName: "Louis Vuitton", posterPhotoName: "advertiser_poster")
 			] as [ProduceCardViewModelProtocol]
 		let vievModels = arr.map{ $0.toCardViewModel()}
 		return vievModels
@@ -52,7 +52,7 @@ class HomeController: UIViewController {
 	
 	
 	private func createBars() {
-		let overAllStack = UIStackView(arrangedSubviews: [topStack, cardsDeckView, bottomStack])
+		let overAllStack = UIStackView(arrangedSubviews: [/*topStack,*/ cardsDeckView, bottomStack])
 		overAllStack.axis = .vertical
 		
 		bottomStack.delegate = self

@@ -12,13 +12,8 @@ class CardViewModel {
 	let imageNames: [String]
 	let attributedString: NSAttributedString
 	let textAlignment: NSTextAlignment
+	private var imageIndex = 0
 	
-	private var imageIndex = 0 {
-		didSet {
-			let image = UIImage(named: imageNames[imageIndex])
-			imageIndexObserver?(imageIndex, image)
-		}
-	}
 	
 	init(imageNames: [String], attributedString: NSAttributedString, textAlignment: NSTextAlignment) {
 		self.imageNames = imageNames
@@ -32,10 +27,17 @@ class CardViewModel {
 	
 	public func goToNextPhoto() {
 		imageIndex = min(imageIndex + 1, imageNames.count - 1)
+		notifyExternalView()
 	}
 	
 	public func goToPrevPhoto() {
 		imageIndex = max(imageIndex - 1, 0)
+		notifyExternalView()
+	}
+	
+	private func notifyExternalView() {
+		let image = UIImage(named: imageNames[imageIndex])
+		imageIndexObserver?(imageIndex, image)
 	}
 	
 }

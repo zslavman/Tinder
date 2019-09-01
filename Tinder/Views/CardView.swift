@@ -27,7 +27,7 @@ class CardView: UIView {
 		label.numberOfLines = 0 // allow multiline
 		return label
 	}()
-	private let threshold: CGFloat = 90 // points for card will fly-away
+	private let threshold: CGFloat = 90 // translation points for card will fly-away
 	public var canBeDismissed = false // fix for dead animation come back
 	private let gradientLayer: CAGradientLayer = {
 		let gragLayer = CAGradientLayer()
@@ -46,10 +46,20 @@ class CardView: UIView {
 	private var cardVM: CardViewModel!
 	private let topLineActiveColor = UIColor.white
 	private let topLineNonActiveColor = UIColor.black.withAlphaComponent(0.2)
-	//private var currentImageIndex = 0
 	private var maxRotateAngle: CGFloat = 40
 	
 	
+	override init(frame: CGRect) {
+		super.init(frame: frame)
+		setup()
+		setupBarsStackView()
+	}
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	
+	// called from VC
 	public func configureWith(_ cardVM: CardViewModel) {
 		self.cardVM = cardVM
 		let imageName = cardVM.imageNames.first ?? ""
@@ -65,26 +75,14 @@ class CardView: UIView {
 		}
 		barsStackView.arrangedSubviews.first!.backgroundColor = topLineActiveColor
 		if barsStackView.arrangedSubviews.count < 2 {
-			barsStackView.arrangedSubviews.forEach {
-				(subview) in
-				subview.isHidden = true
-			}
+			barsStackView.arrangedSubviews.first!.isHidden = true
 		}
 		setupImageIndexObserver()
 	}
 	
 	
-	override init(frame: CGRect) {
-		super.init(frame: frame)
-		setup()
-		setupBarsStackView()
-	}
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	
-	
 	private func setupImageIndexObserver() {
+		// pass callback to ViewModel
 		cardVM.imageIndexObserver = {
 			[weak self] (index, image) in
 			guard let strongSelf = self else { return }
