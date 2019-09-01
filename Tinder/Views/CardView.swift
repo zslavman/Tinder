@@ -46,7 +46,7 @@ class CardView: UIView {
 	private var cardVM: CardViewModel!
 	private let topLineActiveColor = UIColor.white
 	private let topLineNonActiveColor = UIColor.black.withAlphaComponent(0.2)
-	private var currentImageIndex = 0
+	//private var currentImageIndex = 0
 	private var maxRotateAngle: CGFloat = 40
 	
 	
@@ -70,6 +70,7 @@ class CardView: UIView {
 				subview.isHidden = true
 			}
 		}
+		setupImageIndexObserver()
 	}
 	
 	
@@ -80,6 +81,19 @@ class CardView: UIView {
 	}
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
+	}
+	
+	
+	private func setupImageIndexObserver() {
+		cardVM.imageIndexObserver = {
+			[weak self] (index, image) in
+			guard let strongSelf = self else { return }
+			strongSelf.imageView.image = image
+			
+			//set upper pointer color
+			_ = strongSelf.barsStackView.arrangedSubviews.map{ $0.backgroundColor = strongSelf.topLineNonActiveColor }
+			strongSelf.barsStackView.arrangedSubviews[index].backgroundColor = strongSelf.topLineActiveColor
+		}
 	}
 	
 	
@@ -116,22 +130,10 @@ class CardView: UIView {
 	@objc private func onTap(gesture: UITapGestureRecognizer) {
 		let tapLocation = gesture.location(in: nil)
 		if tapLocation.x >= self.frame.width / 2 {
-			currentImageIndex = min(currentImageIndex + 1, cardVM.imageNames.count - 1)
+			cardVM.goToNextPhoto()
 		}
 		else {
-			currentImageIndex = max(currentImageIndex - 1, 0)
-		}
-		let newImageName = cardVM.imageNames[currentImageIndex]
-		imageView.image =  UIImage(named: newImageName)
-		
-		// set upper pointer color
-		for (index, subview) in barsStackView.arrangedSubviews.enumerated() {
-			if index == currentImageIndex {
-				subview.backgroundColor = topLineActiveColor
-			}
-			else {
-				subview.backgroundColor = topLineNonActiveColor
-			}
+			cardVM.goToPrevPhoto()
 		}
 	}
 	

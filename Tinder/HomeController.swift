@@ -71,6 +71,16 @@ class HomeController: UIViewController {
 	}
 	
 	
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		if traitCollection.verticalSizeClass == .compact {
+			print("Hotizontal device position")
+		}
+		else {
+			print("Vertical device position")
+		}
+	}
+	
+	
 	private func setupCards() {
 		let reversed = cardViewModels.shuffled()
 		reversed.forEach {

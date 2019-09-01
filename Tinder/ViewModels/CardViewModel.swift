@@ -8,9 +8,34 @@
 
 import UIKit
 
-struct CardViewModel {
+class CardViewModel {
 	let imageNames: [String]
 	let attributedString: NSAttributedString
 	let textAlignment: NSTextAlignment
+	
+	private var imageIndex = 0 {
+		didSet {
+			let image = UIImage(named: imageNames[imageIndex])
+			imageIndexObserver?(imageIndex, image)
+		}
+	}
+	
+	init(imageNames: [String], attributedString: NSAttributedString, textAlignment: NSTextAlignment) {
+		self.imageNames = imageNames
+		self.attributedString = attributedString
+		self.textAlignment = textAlignment
+	}
+	
+	// little bit of reactive programming - notification clossure
+	public var imageIndexObserver: ((Int, UIImage?) -> ())?
+	
+	
+	public func goToNextPhoto() {
+		imageIndex = min(imageIndex + 1, imageNames.count - 1)
+	}
+	
+	public func goToPrevPhoto() {
+		imageIndex = max(imageIndex - 1, 0)
+	}
 	
 }
